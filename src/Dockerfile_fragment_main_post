@@ -1,0 +1,7 @@
+# Dockerfile_fragment_main_post START
+RUN echo 'PS1="\e[1;38m$PS1\e[0m"' >> /home/stuser/.bashrc
+
+WORKDIR /home/stuser/hostpwd
+ENTRYPOINT [ "/bin/bash" ]
+
+# Dockerfile_fragment_main_post END

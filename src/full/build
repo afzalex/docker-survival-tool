@@ -1,0 +1,15 @@
+#!/bin/bash
+tag=${PWD##*/}
+BUILT_LOCATION=../../built/$tag
+BUILT_DOCKER_FILE=${BUILT_LOCATION}/Dockerfile
+
+echo "building Dockerfile for tag '$tag' at '${BUILT_DOCKER_FILE}'"
+
+mkdir -p "${BUILT_LOCATION}"
+cat ../Dockerfile_fragment_main_pre \
+    ./Dockerfile_fragment_current_pre \
+    ../Dockerfile_fragment_main_in \
+    ./Dockerfile_fragment_current_post \
+    ../Dockerfile_fragment_main_post \
+    > "${BUILT_DOCKER_FILE}"
+

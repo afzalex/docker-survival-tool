@@ -1,0 +1,18 @@
+# Dockerfile_fragment_current_post START
+
+RUN wget -v https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86_64.sh -O /tmp/miniconda.sh && \
+    sudo mkdir -p /opt/conda && \
+    sudo chown -R "stuser:stuser" /opt/conda && \
+    bash /tmp/miniconda.sh -bup /opt/conda
+    
+RUN eval "$(/opt/conda/bin/conda shell.bash hook)" && \
+    conda init 
+
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && \
+    echo 'export NVM_DIR="$HOME/.nvm"' >> /home/stuser/.bashrc && \
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /home/stuser/.bashrc && \
+    export NVM_DIR="$HOME/.nvm" && \
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
+    nvm install node
+
+# Dockerfile_fragment_current_post END

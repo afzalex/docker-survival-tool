@@ -1,0 +1,42 @@
+#!/bin/bash
+export "DOCKER_IMAGE_NAME=afzalex/fz-survival-tool"
+
+rm -rf built
+docker rm -f fzst
+
+version="$(cat src/version.txt)"
+ls -d src/*/ | while read tagdir; do
+    pushd .
+    cd $tagdir
+    tag=${PWD##*/}
+    ./build
+    pwd
+    popd
+    pushd .
+    cd "built/$tag"
+
+    docker image rm -f "${DOCKER_IMAGE_NAME}:$tag"
+    docker container rm -f "${DOCKER_IMAGE_NAME}:$tag"
+    docker image rm -f "${DOCKER_IMAGE_NAME}:$version-$tag"
+    docker container rm -f "${DOCKER_IMAGE_NAME}:$version-$tag"
+    docker build \
+        --tag "${DOCKER_IMAGE_NAME}:$tag" \
+        --tag "${DOCKER_IMAGE_NAME}:$version-$tag" \
+        .
+    if [[ "$1" == "-p" ]]; then
+        docker push "${DOCKER_IMAGE_NAME}:$tag"
+        docker push "${DOCKER_IMAGE_NAME}:$version-$tag"
+    fi
+
+    popd
+done
+
+docker tag "${DOCKER_IMAGE_NAME}:full" "${DOCKER_IMAGE_NAME}:latest"
+docker tag "${DOCKER_IMAGE_NAME}:full" "${DOCKER_IMAGE_NAME}:$version"
+
+
+if [[ "$1" == "-p" ]]; then
+    docker push "${DOCKER_IMAGE_NAME}:latest"
+    docker push "${DOCKER_IMAGE_NAME}:$version"
+fi
+

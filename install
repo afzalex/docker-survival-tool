@@ -1,0 +1,33 @@
+#!/bin/bash
+
+cat <<EOT > "/tmp/fz-survival-tool-bash-profile-template.txt"
+# Conent within this block is managed by fz-survival-tool/install
+# alias to use fz-survival-tool using fzst command
+fz_survival_tool() {
+    pushd \${PWD} > /dev/null
+    cd "${PWD}"
+    ./start \$@
+    popd > /dev/null
+}
+alias fzst='export HOST_PWD_FOR_FZST=\${PWD} && fz_survival_tool \$@'
+EOT
+
+target="${HOME}/.bash_profile"
+touch "${target}"
+
+# If managed block not found, add empty managed block
+if [[ -z $(cat ~/.bash_profile | grep '#FZ_SURVIVAL_TOOL_MANAGED_BLOCK_START') ]]; then 
+cat <<EOT >> "$target"
+#FZ_SURVIVAL_TOOL_MANAGED_BLOCK_START
+#FZ_SURVIVAL_TOOL_MANAGED_BLOCK_END
+EOT
+fi
+
+# Replace conent between managed block
+awk '
+    BEGIN       {p=1}
+    /^#FZ_SURVIVAL_TOOL_MANAGED_BLOCK_START/   {print;system("cat /tmp/fz-survival-tool-bash-profile-template.txt");p=0}
+    /^#FZ_SURVIVAL_TOOL_MANAGED_BLOCK_END/     {p=1}
+    p' "${target}" > "${target}.tmp"
+mv "${target}.tmp" "${target}"
+

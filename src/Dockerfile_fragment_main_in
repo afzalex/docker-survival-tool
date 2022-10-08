@@ -1,0 +1,8 @@
+# Dockerfile_fragment_main_in START
+
+RUN useradd -G root -m stuser && \
+    echo 'stuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
+    mkdir -p /home/stuser/hostpwd && \
+    touch /home/stuser/hostpwd/NA_FLAG_this_file_is_present_when_host_pwd_is_not_mounted
+USER stuser
+# Dockerfile_fragment_main_in END

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+
+MODE=VOLATILE
+SURVIVAL_TOOL_NAME=fzst
+
+mkdir -p "${HOME}/.local/data"
+
+extraparams=""
+
+if [[ "${MODE}" == "VOLATILE" ]]; then
+docker container rm -f ${SURVIVAL_TOOL_NAME} > /dev/null 2>&1
+extraparams="--rm"
+fi
+
+
+
+# docker run --name=${SURVIVAL_TOOL_NAME} \
+#     -it \
+#     -v ${HOME}/.local/data/fz-survival-tool/home/stuser:/home/stuser \
+#     -v ${HOME}/.local/data/fz-survival-tool/etc/apt/sources:/etc/apt/sources \
+#     fz-survival-tool
+
+
+useold=false
+if [[ "${MODE}" == "PERSIST" ]]; then
+    docker inspect ${SURVIVAL_TOOL_NAME} > /dev/null 2>&1
+    if [[ "$?" == "0" ]]; then
+        useold=true
+    fi
+fi
+
+if [[ "$useold" == "true" ]]; then
+docker start -i ${SURVIVAL_TOOL_NAME}
+else
+docker run --name=${SURVIVAL_TOOL_NAME} \
+    -it ${extraparams} ${@}\
+    -h survival-tool \
+    -v ${HOME}/.local/data/fz-survival-tool/home/stuser/shared:/home/stuser/shared \
+    -v ${HOST_PWD_FOR_FZST}:/home/stuser/hostpwd \
+    afzalex/fz-survival-tool
+fi

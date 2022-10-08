@@ -1,0 +1,6 @@
+# Dockerfile_fragment_main_pre START
+FROM debian:stable-slim
+
+RUN apt-get update && \
+    apt-get install -y sudo wget curl iputils-ping vim jq git
+# Dockerfile_fragment_main_pre END
