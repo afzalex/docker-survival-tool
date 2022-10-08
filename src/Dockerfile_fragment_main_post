@@ -1,5 +1,6 @@
 # Dockerfile_fragment_main_post START
 RUN echo 'PS1="\e[1;38m$PS1\e[0m"' >> /home/stuser/.bashrc
+RUN curl https://www.afzalex.com/scripts/install-flog.sh | /bin/bash
 
 WORKDIR /home/stuser/hostpwd
 ENTRYPOINT [ "/bin/bash" ]
