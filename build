@@ -23,20 +23,10 @@ ls -d src/*/ | while read tagdir; do
         --tag "${DOCKER_IMAGE_NAME}:$tag" \
         --tag "${DOCKER_IMAGE_NAME}:$version-$tag" \
         .
-    if [[ "$1" == "-p" ]]; then
-        docker push "${DOCKER_IMAGE_NAME}:$tag"
-        docker push "${DOCKER_IMAGE_NAME}:$version-$tag"
-    fi
-
     popd
 done
 
 docker tag "${DOCKER_IMAGE_NAME}:full" "${DOCKER_IMAGE_NAME}:latest"
 docker tag "${DOCKER_IMAGE_NAME}:full" "${DOCKER_IMAGE_NAME}:$version"
 
-
-if [[ "$1" == "-p" ]]; then
-    docker push "${DOCKER_IMAGE_NAME}:latest"
-    docker push "${DOCKER_IMAGE_NAME}:$version"
-fi
 

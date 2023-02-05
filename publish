@@ -1,0 +1,16 @@
+#!/bin/bash
+export "DOCKER_IMAGE_NAME=afzalex/fz-survival-tool"
+
+version="$(cat src/version.txt)"
+ls -d src/*/ | while read tagdir; do
+    pushd .
+    cd $tagdir
+    tag=${PWD##*/}
+        docker push "${DOCKER_IMAGE_NAME}:$tag"
+        docker push "${DOCKER_IMAGE_NAME}:$version-$tag"
+    popd
+done
+
+docker push "${DOCKER_IMAGE_NAME}:latest"
+docker push "${DOCKER_IMAGE_NAME}:$version"
+

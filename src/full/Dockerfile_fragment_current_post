@@ -4,15 +4,21 @@ RUN wget -v https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86
     sudo mkdir -p /opt/conda && \
     sudo chown -R "stuser:stuser" /opt/conda && \
     bash /tmp/miniconda.sh -bup /opt/conda
-    
+
+COPY requirements.txt /home/stuser/requirements.txt    
 RUN eval "$(/opt/conda/bin/conda shell.bash hook)" && \
-    conda init 
+    conda init && \
+    pip install -r /home/stuser/requirements.txt
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && \
     echo 'export NVM_DIR="$HOME/.nvm"' >> /home/stuser/.bashrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /home/stuser/.bashrc && \
     export NVM_DIR="$HOME/.nvm" && \
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
-    nvm install node
+    nvm install 18.10.0
+
+# RUN sudo apt-get install -y "openjdk-11-jdk-headless" && \
+#     sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java && \
+#     echo '/usr/lib/jvm/java-11-openjdk-amd64' >> /home/stuser/.bashrc
 
 # Dockerfile_fragment_current_post END
