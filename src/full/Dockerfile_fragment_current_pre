@@ -1,6 +1,13 @@
 # Dockerfile_fragment_current_pre START
 
-RUN apt-get install -y "openjdk-11-jdk-headless" \
-    "fio"
+RUN apt-get install -y \
+    # For adding new apt-get repositories
+    "software-properties-common" \
+    "openjdk-17-jdk-headless" \
+    # flexible I/O tester
+    "fio" \
+    # xmllint like tools
+    "libxml2-utils" \
+    "ffmpeg=7:5.1.3-1" 
 
 # Dockerfile_fragment_current_pre END

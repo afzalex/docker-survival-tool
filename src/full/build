@@ -3,7 +3,7 @@ tag=${PWD##*/}
 BUILT_LOCATION=../../built/$tag
 BUILT_DOCKER_FILE=${BUILT_LOCATION}/Dockerfile
 
-echo "building Dockerfile for tag '$tag' at '${BUILT_DOCKER_FILE}'"
+printf "\033[1;32m Building Dockerfile for tag '$tag' at '${BUILT_DOCKER_FILE}' \033[0m\n"
 
 mkdir -p "${BUILT_LOCATION}"
 cat ../Dockerfile_fragment_main_pre \

@@ -6,6 +6,8 @@ docker rm -f fzst
 
 version="$(cat src/version.txt)"
 ls -d src/*/ | while read tagdir; do
+
+    printf "\033[1;32mBuilding for '${tagdir}' \033[0m\n"
     pushd .
     cd $tagdir
     tag=${PWD##*/}
@@ -15,10 +17,12 @@ ls -d src/*/ | while read tagdir; do
     pushd .
     cd "built/$tag"
 
+    printf "\033[1;32mPre-cleaning \033[0m\n"
     docker image rm -f "${DOCKER_IMAGE_NAME}:$tag"
     docker container rm -f "${DOCKER_IMAGE_NAME}:$tag"
     docker image rm -f "${DOCKER_IMAGE_NAME}:$version-$tag"
     docker container rm -f "${DOCKER_IMAGE_NAME}:$version-$tag"
+    printf "\033[1;32mBuilding docker image \033[0m\n"
     docker build \
         --tag "${DOCKER_IMAGE_NAME}:$tag" \
         --tag "${DOCKER_IMAGE_NAME}:$version-$tag" \
