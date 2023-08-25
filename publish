@@ -6,7 +6,9 @@ ls -d src/*/ | while read tagdir; do
     pushd .
     cd $tagdir
     tag=${PWD##*/}
+        echo docker push "${DOCKER_IMAGE_NAME}:$tag"
         docker push "${DOCKER_IMAGE_NAME}:$tag"
+        echo docker push "${DOCKER_IMAGE_NAME}:$version-$tag"
         docker push "${DOCKER_IMAGE_NAME}:$version-$tag"
     popd
 done
