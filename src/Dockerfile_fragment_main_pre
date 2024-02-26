@@ -2,5 +2,5 @@
 FROM debian:stable-slim
 
 RUN apt-get update && \
-    apt-get install -y sudo wget curl iputils-ping vim jq git unzip
+    apt-get install -y sudo wget curl iputils-ping vim jq git unzip dnsutils
 # Dockerfile_fragment_main_pre END
