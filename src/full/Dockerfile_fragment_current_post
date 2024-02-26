@@ -1,21 +1,36 @@
 # Dockerfile_fragment_current_post START
 
-RUN wget -v https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86_64.sh -O /tmp/miniconda.sh && \
+# Installing miniconda
+ARG MINICONDA_X86_64="https://repo.anaconda.com/miniconda/Miniconda3-py39_23.11.0-2-Linux-x86_64.sh"
+ARG MINICONDA_AARCH64="https://repo.anaconda.com/miniconda/Miniconda3-py39_23.11.0-2-Linux-aarch64.sh"
+ 
+RUN export ARCH=$(uname -m) && \
+    if [ "${ARCH}" = "amd64" ]; then \
+        wget -v $MINICONDA_X86_64 -O /tmp/miniconda.sh; \
+    elif [ "${ARCH}" = "aarch64" ]; then \
+        wget -v $MINICONDA_AARCH64 -O /tmp/miniconda.sh; \
+    else \
+        echo "Unsupported architecture: $ARCH"; \
+        exit 1;\
+    fi && \
     sudo mkdir -p /opt/conda && \
     sudo chown -R "stuser:stuser" /opt/conda && \
     bash /tmp/miniconda.sh -bup /opt/conda
 
+# Installing Jupyterlab
 COPY requirements.txt /home/stuser/requirements.txt    
-RUN eval "$(/opt/conda/bin/conda shell.bash hook)" && \
+RUN sudo apt-get install -y gcc python3-dev && \
+    eval "$(/opt/conda/bin/conda shell.bash hook)" && \
     conda init && \
     pip install -r /home/stuser/requirements.txt
 
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && \
+# Installing node and nvm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash && \
     echo 'export NVM_DIR="$HOME/.nvm"' >> /home/stuser/.bashrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /home/stuser/.bashrc && \
     export NVM_DIR="$HOME/.nvm" && \
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
-    nvm install 18.10.0
+    nvm install 20
 
 # RUN sudo apt-get install -y "openjdk-11-jdk-headless" && \
 #     sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java && \
