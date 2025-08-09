@@ -1,5 +1,30 @@
 #!/bin/bash
 
+echo "Starting fz-survival-tool installation..."
+
+echo "Detecting shell type and configuration file..."
+# Detect shell type
+if [[ -n "$ZSH_VERSION" ]]; then
+    shell_type="zsh"
+    target="${HOME}/.zshrc"
+elif [[ -n "$BASH_VERSION" ]]; then
+    shell_type="bash"
+    # Check if we're on macOS (which typically uses bash_profile) or Linux (which typically uses bashrc)
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        target="${HOME}/.bash_profile"
+    else
+        target="${HOME}/.bashrc"
+    fi
+else
+    echo "Warning: Unknown shell type, defaulting to .bashrc"
+    shell_type="unknown"
+    target="${HOME}/.bashrc"
+fi
+
+echo "Detected shell: ${shell_type}"
+echo "Target configuration file: ${target}"
+
+echo "Creating bash profile template..."
 cat <<EOT > "/tmp/fz-survival-tool-bash-profile-template.txt"
 # Conent within this block is managed by fz-survival-tool/install
 # alias to use fz-survival-tool using fzst command
@@ -11,18 +36,25 @@ fz_survival_tool() {
 }
 alias fzst='export HOST_PWD_FOR_FZST=\${PWD} && fz_survival_tool \$@'
 EOT
+echo "Template created at /tmp/fz-survival-tool-bash-profile-template.txt"
 
-target="${HOME}/.bash_profile"
+echo "Ensuring configuration file exists..."
 touch "${target}"
 
 # If managed block not found, add empty managed block
-if [[ -z $(cat ~/.bash_profile | grep '#FZ_SURVIVAL_TOOL_MANAGED_BLOCK_START') ]]; then 
-cat <<EOT >> "$target"
+echo "Checking if managed block exists in configuration file..."
+if [[ -z $(cat "${target}" | grep '#FZ_SURVIVAL_TOOL_MANAGED_BLOCK_START') ]]; then 
+    echo "Managed block not found, adding empty managed block..."
+    cat <<EOT >> "$target"
 #FZ_SURVIVAL_TOOL_MANAGED_BLOCK_START
 #FZ_SURVIVAL_TOOL_MANAGED_BLOCK_END
 EOT
+    echo "Empty managed block added to configuration file"
+else
+    echo "Managed block already exists in configuration file"
 fi
 
+echo "Updating configuration file with fz-survival-tool configuration..."
 # Replace conent between managed block
 awk '
     BEGIN       {p=1}
@@ -30,4 +62,8 @@ awk '
     /^#FZ_SURVIVAL_TOOL_MANAGED_BLOCK_END/     {p=1}
     p' "${target}" > "${target}.tmp"
 mv "${target}.tmp" "${target}"
+
+echo "Installation completed successfully!"
+echo "You can now use 'fzst' command to run fz-survival-tool from any directory."
+echo "Please restart your terminal or run 'source ${target}' to activate the changes."
 
